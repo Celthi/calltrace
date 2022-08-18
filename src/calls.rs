@@ -1,90 +1,15 @@
+pub mod callstack;
+pub mod frame;
+
 use anyhow::Result;
 use std::collections::HashMap;
 use std::fmt;
 use std::fmt::Display;
 use std::fs::File;
-use std::hash::Hash;
+
+use callstack::CallStack;
 use std::io::Read;
-use std::iter::zip;
 
-#[derive(Eq, Clone, Debug)]
-pub struct Frame {
-    pub raw: String,
-    func: Option<String>,
-    file: Option<String>,
-    line: Option<String>,
-}
-impl Frame {
-    pub fn new(s: String) -> Self {
-        Frame {raw: s, func: None, file: None, line: None}
-    }
-}
-impl Display for Frame {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f,"{}", self.raw)
-    }
-}
-impl PartialEq for Frame {
-    fn eq(&self, other: &Self) -> bool {
-        self.raw == other.raw
-    }
-}
-
-impl Hash for Frame {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.raw.hash(state)
-    }
-}
-#[derive(Eq, Clone, Hash, Debug)]
-pub struct CallStack {
-    frames: Vec<Frame>,
-}
-impl PartialEq for CallStack {
-    fn eq(&self, other: &Self) -> bool {
-        if self.frames.len() != self.frames.len() {
-            return false;
-        }
-        self.subset(other)
-    }
-}
-impl Display for CallStack {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for v in &self.frames {
-            write!(f, "{}\n", v);
-        }
-        write!(f, "\n")
-    }
-}
-impl CallStack {
-    pub fn subset(&self, other: &Self) -> bool {
-        for (l, r) in zip(self.frames.iter(), other.frames.iter()) {
-            if l != r {
-                return false;
-            }
-        }
-        return true;        
-    }
-    pub fn has_keyword(s: &str) -> bool {
-        todo!()
-    }
-    pub fn from_string(s: &str) -> Self {
-        let mut cs = CallStack::new();
-        for line in s.lines() {
-            if line.trim().is_empty() {
-                continue;
-            }
-            cs.append(line.trim().to_string());
-        }
-        cs
-    }
-
-    pub fn new() -> Self {
-        CallStack { frames: vec![] }
-    }
-    pub fn append(&mut self, frame: String) {
-        self.frames.push(Frame::new(frame));
-    }
-}
 pub struct CallStacks {
     pub data: HashMap<CallStack, usize>,
 }
@@ -112,11 +37,17 @@ impl CallStacks {
         Ok(Self::from_string(&content, sep))
     }
     pub fn new() -> Self {
-        CallStacks { data: HashMap::new() }
+        CallStacks {
+            data: HashMap::new(),
+        }
     }
 
-    pub fn insert(&mut self, cs: CallStack, count: usize) -> usize{
-        *self.data.entry(cs).and_modify(|e| *e +=count).or_insert(count)
+    pub fn insert(&mut self, cs: CallStack, count: usize) -> usize {
+        *self
+            .data
+            .entry(cs)
+            .and_modify(|e| *e += count)
+            .or_insert(count)
     }
     pub fn from_string(s: &str, sep: &Separate) -> Self {
         let mut css = CallStacks::new();
@@ -153,7 +84,6 @@ impl CallStacks {
     }
 }
 
-
 #[cfg(test)]
 mod test {
     #[test]
@@ -182,7 +112,7 @@ f3
 
     #[test]
     fn output() {
-        let s =r#"
+        let s = r#"
         Callstack:
         f1
         f2
@@ -200,18 +130,24 @@ f3
         };
         let css = CallStacks::from_string(s, &sep);
         assert_eq!(css.size(), 2);
-        let cs = CallStack::from_string(r"
+        let cs = CallStack::from_string(
+            r"
         f1
-        f2");
+        f2",
+        );
         assert!(css.has(&cs));
-        let cs = CallStack::from_string(r"
+        let cs = CallStack::from_string(
+            r"
         f0
-        f2");
+        f2",
+        );
         assert!(css.has(&cs));
-        let cs = CallStack::from_string(r"
+        let cs = CallStack::from_string(
+            r"
         f0
         f2
-        f3");
+        f3",
+        );
         assert!(!css.has(&cs));
     }
 }
