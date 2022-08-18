@@ -1,10 +1,11 @@
-use calltrace::calls::{Separate, CallStacks};
+use calltrace::calls::CallStacks;
+use calltrace::calls::callstack::Quotes;
 use calltrace::differ;
 use anyhow::Result;
 fn main() ->Result<()> {
     let base_file = "test/No_LeakRefLeakStacks.txt";
     let target_file = "test/RefLeakStacks.txt";
-    let sep = Separate {
+    let sep = Quotes {
         start: &["AddRef:", "RelRef:"],
         end: &["\n"],
     };

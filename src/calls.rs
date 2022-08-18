@@ -1,13 +1,12 @@
 pub mod callstack;
 pub mod frame;
-
+use callstack::CallStack;
+use callstack::Quotes;
 use anyhow::Result;
 use std::collections::HashMap;
 use std::fmt;
 use std::fmt::Display;
 use std::fs::File;
-
-use callstack::CallStack;
 use std::io::Read;
 
 pub struct CallStacks {
@@ -17,19 +16,20 @@ pub struct CallStacks {
 impl Display for CallStacks {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (k, v) in &self.data {
-            writeln!(f, "count: {}", *v);
-            write!(f, "{}", &k);
+            writeln!(f, "count: {}", *v)?;
+            write!(f, "{}", &k)?;
         }
-        write!(f, "\n")
+        writeln!(f)
     }
 }
-pub struct Separate<'a, 'b> {
-    pub start: &'a [&'a str],
-    pub end: &'b [&'b str],
+impl Default for CallStacks {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl CallStacks {
-    pub fn from_file(s: &str, sep: &Separate) -> Result<Self> {
+    pub fn from_file(s: &str, sep: &Quotes) -> Result<Self> {
         let mut file = File::open(s)?;
         let mut content = String::new();
         let size = file.read_to_string(&mut content)?;
@@ -49,20 +49,20 @@ impl CallStacks {
             .and_modify(|e| *e += count)
             .or_insert(count)
     }
-    pub fn from_string(s: &str, sep: &Separate) -> Self {
+    pub fn from_string(s: &str, sep: &Quotes) -> Self {
         let mut css = CallStacks::new();
         let mut cs = CallStack::new();
         let mut in_frames = false;
         for line in s.lines() {
             let line = line.trim();
-            if sep.start.into_iter().any(|s| line == *s) && !in_frames {
+            if sep.start.iter().any(|s| line == *s) && !in_frames {
                 // call stack starts
                 in_frames = true;
                 cs = CallStack::new();
 
                 continue;
             }
-            if sep.end.into_iter().any(|s| line == s.trim()) && in_frames {
+            if sep.end.iter().any(|s| line == s.trim()) && in_frames {
                 // call stack ends
                 css.insert(cs, 1);
                 cs = CallStack::new();
@@ -102,7 +102,7 @@ f3
 
         "#;
         use super::*;
-        let sep = Separate {
+        let sep = Quotes {
             start: &["AddRef:", "RelRef:"],
             end: &["\n"],
         };
@@ -124,7 +124,7 @@ f3
         f2
         Callstack end"#;
         use super::*;
-        let sep = Separate {
+        let sep = Quotes {
             start: &["Callstack:"],
             end: &["Callstack end"],
         };
