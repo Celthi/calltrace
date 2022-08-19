@@ -1,11 +1,10 @@
 pub mod callstack;
 pub mod frame;
+use anyhow::Result;
 use callstack::CallStack;
 use callstack::Quotes;
-use anyhow::Result;
 use std::collections::HashMap;
 use std::fmt;
-use std::fmt::Display;
 use std::fs::File;
 use std::io::Read;
 
@@ -13,7 +12,7 @@ pub struct CallStacks {
     pub data: HashMap<CallStack, usize>,
 }
 
-impl Display for CallStacks {
+impl std::fmt::Display for CallStacks {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for (k, v) in &self.data {
             writeln!(f, "count: {}", *v)?;
@@ -85,69 +84,4 @@ impl CallStacks {
 }
 
 #[cfg(test)]
-mod test {
-    #[test]
-    fn extract_call_stack() {
-        let s = r#"
-        
-AddRef:
-f0
-f2
-f3
-
-RelRef:
-f1
-f2
-f3
-
-        "#;
-        use super::*;
-        let sep = Quotes {
-            start: &["AddRef:", "RelRef:"],
-            end: &["\n"],
-        };
-        let css = CallStacks::from_string(s, &sep);
-        assert_eq!(css.size(), 2);
-    }
-
-    #[test]
-    fn output() {
-        let s = r#"
-        Callstack:
-        f1
-        f2
-        Callstack end
-        dfhdiadfad
-        
-        Callstack:
-        f0
-        f2
-        Callstack end"#;
-        use super::*;
-        let sep = Quotes {
-            start: &["Callstack:"],
-            end: &["Callstack end"],
-        };
-        let css = CallStacks::from_string(s, &sep);
-        assert_eq!(css.size(), 2);
-        let cs = CallStack::from_string(
-            r"
-        f1
-        f2",
-        );
-        assert!(css.has(&cs));
-        let cs = CallStack::from_string(
-            r"
-        f0
-        f2",
-        );
-        assert!(css.has(&cs));
-        let cs = CallStack::from_string(
-            r"
-        f0
-        f2
-        f3",
-        );
-        assert!(!css.has(&cs));
-    }
-}
+mod test;

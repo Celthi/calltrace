@@ -3,8 +3,8 @@ use calltrace::calls::callstack::Quotes;
 use calltrace::differ;
 use anyhow::Result;
 fn main() ->Result<()> {
-    let base_file = "test/No_LeakRefLeakStacks.txt";
-    let target_file = "test/RefLeakStacks.txt";
+    let base_file = "test_data/No_LeakRefLeakStacks.txt";
+    let target_file = "test_data/RefLeakStacks.txt";
     let sep = Quotes {
         start: &["AddRef:", "RelRef:"],
         end: &["\n"],
