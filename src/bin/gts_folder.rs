@@ -10,8 +10,8 @@ fn main() -> Result<()>{
     let e1 = quote::TrimExactMatch::new("\n".to_string());
     let css = CallStacks::from_file(f, &matches, &[&e1])?;
 
-    let foler = folder::Folder::new(&css);
-    println!("size = {}", foler.size());
-    println!("{}", foler);    
+    let folder = folder::Folder::new(&css);
+    println!("size = {}", folder.size());
+    println!("{}", folder);    
     Ok(())
 }
