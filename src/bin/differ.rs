@@ -8,8 +8,10 @@ fn main() ->Result<()> {
     let m1 = quote::TrimExactMatch::new("AddRef:".to_string());
     let m2 = quote::TrimExactMatch::new("RelRef:".to_string());
     let e1 = quote::TrimExactMatch::new("\n".to_string());
-    let cs_base = CallStacks::from_file(base_file, &[&m1, &m2], &[&e1])?;
-    let cs_target = CallStacks::from_file(target_file, &[&m1, &m2], &[&e1])?;
+    let callstack_begin:Vec<&dyn quote::MatchQuote> = vec![&m1, &m2];
+    let callstack_end:Vec<&dyn quote::MatchQuote> = vec![&e1];
+    let cs_base = CallStacks::from_file(base_file, &callstack_begin, &callstack_end)?;
+    let cs_target = CallStacks::from_file(target_file, &callstack_begin, &callstack_end)?;
     
     let diff = differ::Differ::not_in(&cs_target, &cs_base);
 
