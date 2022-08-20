@@ -46,26 +46,25 @@ impl CallStacks {
     }
     pub fn from_string(s: &str, starts: &[&dyn MatchQuote], ends: &[&dyn MatchQuote]) -> Self {
         let mut css = CallStacks::new();
-        let mut cs = CallStack::new();
+        let mut cs = Some(CallStack::new()); // according to https://users.rust-lang.org/t/error-reinitialization-might-get-skipped-actually-will-not-get-skipped-in-this-case/80132/2
         let mut in_frames = false;
         for line in s.lines() {
             if starts.iter().any(|s| s.match_quote(line)) && !in_frames {
                 // call stack starts
                 in_frames = true;
-                cs = CallStack::new();
+                cs = Some(CallStack::new());
 
                 continue;
             }
             if ends.iter().any(|s| s.match_quote(line)) && in_frames {
                 // call stack ends
-                css.push(cs);
-                cs = CallStack::new();
+                css.push(cs.take().unwrap());
                 in_frames = false;
                 continue;
             }
 
             if !line.trim().is_empty() && in_frames {
-                cs.append(line.trim().to_string());
+                cs.as_mut().unwrap().append(line.trim().to_string());
             }
         }
         css
