@@ -2,12 +2,12 @@ pub mod callstack;
 pub mod frame;
 use anyhow::Result;
 use callstack::CallStack;
-use callstack::Quotes;
 use std::collections::HashMap;
 use std::fmt;
 use std::fs::File;
 use std::io::Read;
-
+pub mod quote;
+use quote::MatchQuote;
 pub struct CallStacks {
     pub data: HashMap<CallStack, usize>,
 }
@@ -28,12 +28,15 @@ impl Default for CallStacks {
 }
 
 impl CallStacks {
-    pub fn from_file(s: &str, sep: &Quotes) -> Result<Self> {
+    pub fn from_file(s: &str,starts: &[&dyn MatchQuote], ends: &[&dyn MatchQuote]) -> Result<Self> {
         let mut file = File::open(s)?;
         let mut content = String::new();
         let size = file.read_to_string(&mut content)?;
+        if size == 0 {
+            return Ok(CallStacks::default());
+        }
 
-        Ok(Self::from_string(&content, sep))
+        Ok(Self::from_string(&content, starts, ends))
     }
     pub fn new() -> Self {
         CallStacks {
@@ -48,20 +51,20 @@ impl CallStacks {
             .and_modify(|e| *e += count)
             .or_insert(count)
     }
-    pub fn from_string(s: &str, sep: &Quotes) -> Self {
+    pub fn from_string(s: &str, starts: &[&dyn MatchQuote], ends: &[&dyn MatchQuote]) -> Self {
         let mut css = CallStacks::new();
         let mut cs = CallStack::new();
         let mut in_frames = false;
         for line in s.lines() {
             let line = line.trim();
-            if sep.start.iter().any(|s| line == *s) && !in_frames {
+            if starts.iter().any(|s| s.match_quote(line)) && !in_frames {
                 // call stack starts
                 in_frames = true;
                 cs = CallStack::new();
 
                 continue;
             }
-            if sep.end.iter().any(|s| line == s.trim()) && in_frames {
+            if ends.iter().any(|s| s.match_quote(line)) && in_frames {
                 // call stack ends
                 css.insert(cs, 1);
                 cs = CallStack::new();

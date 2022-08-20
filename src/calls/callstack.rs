@@ -42,8 +42,13 @@ impl CallStack {
         }
         true
     }
-    pub fn has_keyword(s: &str) -> bool {
-        todo!()
+    pub fn has_keyword(&self, pat: &str) -> bool {
+        for f in &self.frames {
+            if f.raw.contains(pat) {
+                return true;
+            }
+        }
+        false
     }
     pub fn from_string(s: &str) -> Self {
         let mut cs = CallStack::new();
@@ -64,8 +69,3 @@ impl CallStack {
     }
 }
 
-
-pub struct Quotes<'a, 'b> {
-    pub start: &'a [&'a str],
-    pub end: &'b [&'b str],
-}
