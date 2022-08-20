@@ -33,8 +33,11 @@ impl Folder {
             .and_modify(|e| *e += count)
             .or_insert(count)
     }
-    pub fn size(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.map.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
     }
     pub fn has(&self, k: &CallStack) -> bool {
         self.map.contains_key(k)
