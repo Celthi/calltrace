@@ -49,7 +49,6 @@ impl CallStacks {
         let mut cs = CallStack::new();
         let mut in_frames = false;
         for line in s.lines() {
-            let line = line.trim();
             if starts.iter().any(|s| s.match_quote(line)) && !in_frames {
                 // call stack starts
                 in_frames = true;
@@ -65,8 +64,8 @@ impl CallStacks {
                 continue;
             }
 
-            if !line.is_empty() && in_frames {
-                cs.append(line.to_string());
+            if !line.trim().is_empty() && in_frames {
+                cs.append(line.trim().to_string());
             }
         }
         css

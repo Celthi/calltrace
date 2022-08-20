@@ -6,7 +6,6 @@ fn main() ->Result<()> {
     let base_file = "test_data/No_LeakRefLeakStacks.txt";
     let target_file = "test_data/RefLeakStacks.txt";
     let m1 = quote::TrimExactMatch::new("AddRef:".to_string());
-
     let m2 = quote::TrimExactMatch::new("RelRef:".to_string());
     let e1 = quote::TrimExactMatch::new("\n".to_string());
     let cs_base = CallStacks::from_file(base_file, &[&m1, &m2], &[&e1])?;

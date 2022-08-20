@@ -5,7 +5,7 @@ use std::iter::zip;
 use super::frame::Frame;
 #[derive(Eq, Clone, Debug)]
 pub struct CallStack {
-    frames: Vec<Frame>,
+    pub frames: Vec<Frame>,
 }
 impl PartialEq for CallStack {
     fn eq(&self, other: &Self) -> bool {
