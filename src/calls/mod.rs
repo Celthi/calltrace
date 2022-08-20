@@ -6,8 +6,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::fs::File;
 use std::io::Read;
-pub mod quote;
-use quote::MatchQuote;
+use crate::quote::MatchQuote;
 pub struct CallStacks {
     pub data: HashMap<CallStack, usize>,
 }

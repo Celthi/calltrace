@@ -1,5 +1,5 @@
 use calltrace::calls::CallStacks;
-use calltrace::calls::quote;
+use calltrace::quote;
 use anyhow::Result;
 fn main() -> Result<()>{
     let f = "test_data/gts_callstack.txt";
@@ -8,7 +8,7 @@ fn main() -> Result<()>{
     let m2 =  quote::TrimPrefixMatch::new("Write of size".to_string());
     matches.push(&m2);
     
-    let e1 = quote::TrimExtractMatch::new("\n".to_string());
+    let e1 = quote::TrimExactMatch::new("\n".to_string());
 
     let css = CallStacks::from_file(f, &matches, &[&e1])?;
     println!("size = {}", css.data.len());

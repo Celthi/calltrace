@@ -67,5 +67,11 @@ impl CallStack {
     pub fn append(&mut self, frame: String) {
         self.frames.push(Frame::new(frame));
     }
+    pub fn get(&self, i: usize) -> Option<&Frame> {
+        if self.frames.len() < i {
+            return None;
+        }
+        Some(&self.frames[i])
+    }
 }
 

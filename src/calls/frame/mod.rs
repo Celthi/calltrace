@@ -14,6 +14,7 @@ struct InnerFrame {
     func: Option<String>,
     file: Option<String>,
     line: Option<String>,
+    lib: Option<String>,
 }
 impl PartialEq for InnerFrame {
     fn eq(&self, other: &Self) -> bool {
@@ -27,6 +28,7 @@ impl InnerFrame {
             func: c.name("func").map(|m| m.as_str().to_owned()),
             file: c.name("file").map(|m| m.as_str().to_string()),
             line: c.name("line").map(|m| m.as_str().to_string()),
+            lib: None
         })
     }
     fn get_func(&self) -> Option<&str> {

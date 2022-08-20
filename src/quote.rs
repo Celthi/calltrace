@@ -1,4 +1,3 @@
-
 pub trait MatchQuote {
     fn match_quote(&self, line: &str) -> bool;
 }
@@ -17,7 +16,7 @@ impl MatchQuote for ExactMatch {
     }
 }
 pub struct PrefixMatch {
-    prefix: String
+    prefix: String,
 }
 impl MatchQuote for PrefixMatch {
     fn match_quote(&self, line: &str) -> bool {
@@ -26,13 +25,11 @@ impl MatchQuote for PrefixMatch {
 }
 impl PrefixMatch {
     pub fn new(prefix: String) -> Self {
-        PrefixMatch {
-            prefix
-        }
+        PrefixMatch { prefix }
     }
 }
 pub struct TrimPrefixMatch {
-    prefix: String
+    prefix: String,
 }
 impl MatchQuote for TrimPrefixMatch {
     fn match_quote(&self, line: &str) -> bool {
@@ -42,21 +39,52 @@ impl MatchQuote for TrimPrefixMatch {
 impl TrimPrefixMatch {
     pub fn new(prefix: String) -> Self {
         TrimPrefixMatch {
-            prefix: prefix.trim().to_string()
+            prefix: prefix.trim().to_string(),
         }
     }
 }
-pub struct TrimExtractMatch {
-    m: String
+pub struct TrimExactMatch {
+    m: String,
 }
-impl TrimExtractMatch {
+impl TrimExactMatch {
     pub fn new(s: String) -> Self {
-        TrimExtractMatch { m: s.trim().to_string() }
+        TrimExactMatch {
+            m: s.trim().to_string(),
+        }
     }
 }
 
-impl MatchQuote for TrimExtractMatch {
+impl MatchQuote for TrimExactMatch {
     fn match_quote(&self, line: &str) -> bool {
         self.m == line.trim()
+    }
+}
+
+pub struct KeywordMatch {
+    k: String,
+}
+impl KeywordMatch {
+    pub fn new(k: String) -> Self {
+        KeywordMatch { k }
+    }
+}
+
+impl MatchQuote for KeywordMatch {
+    fn match_quote(&self, line: &str) -> bool {
+        line.contains(&self.k)
+    }
+}
+
+pub struct ExcludeKeywordMatch {
+    e: String,
+}
+impl ExcludeKeywordMatch {
+    pub fn new(e: String) -> Self {
+        ExcludeKeywordMatch { e }
+    }
+}
+impl MatchQuote for ExcludeKeywordMatch {
+    fn match_quote(&self, line: &str) -> bool {
+        !line.contains(&self.e)
     }
 }
