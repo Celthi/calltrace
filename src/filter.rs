@@ -28,9 +28,8 @@ pub fn filter(css: &CallStacks, filter: &dyn Filter) -> CallStacks {
     let mut css_res = CallStacks::new();
 
     for cs in &css.data{
-        let cs = cs.0;
         if filter.include(cs) {
-            css_res.insert(cs.clone(), 1);
+            css_res.push(cs.clone());
         }
     }
 

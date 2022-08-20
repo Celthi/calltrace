@@ -14,7 +14,7 @@ fn main() ->Result<()> {
     
     let diff = differ::Differ::not_in(&cs_target, &cs_base);
 
-    println!("size = {}:", diff.data.len());
+    println!("size = {}:", diff.map.len());
     println!("{}", diff);
     Ok(())
 }

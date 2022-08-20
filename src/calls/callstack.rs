@@ -9,7 +9,7 @@ pub struct CallStack {
 }
 impl PartialEq for CallStack {
     fn eq(&self, other: &Self) -> bool {
-        if self.frames.len() != self.frames.len() {
+        if self.frames.len() != other.frames.len() {
             return false;
         }
         self.subset(other)
@@ -73,5 +73,6 @@ impl CallStack {
         }
         Some(&self.frames[i])
     }
+
 }
 

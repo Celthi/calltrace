@@ -2,19 +2,17 @@ pub mod callstack;
 pub mod frame;
 use anyhow::Result;
 use callstack::CallStack;
-use std::collections::HashMap;
 use std::fmt;
 use std::fs::File;
 use std::io::Read;
 use crate::quote::MatchQuote;
 pub struct CallStacks {
-    pub data: HashMap<CallStack, usize>,
+    pub data: Vec<CallStack>,
 }
 
 impl std::fmt::Display for CallStacks {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for (k, v) in &self.data {
-            writeln!(f, "count: {}", *v)?;
+        for k in &self.data {
             write!(f, "{}", &k)?;
         }
         writeln!(f)
@@ -39,16 +37,12 @@ impl CallStacks {
     }
     pub fn new() -> Self {
         CallStacks {
-            data: HashMap::new(),
+            data: vec![]
         }
     }
 
-    pub fn insert(&mut self, cs: CallStack, count: usize) -> usize {
-        *self
-            .data
-            .entry(cs)
-            .and_modify(|e| *e += count)
-            .or_insert(count)
+    pub fn push(&mut self, cs: CallStack) {
+        self.data.push(cs);
     }
     pub fn from_string(s: &str, starts: &[&dyn MatchQuote], ends: &[&dyn MatchQuote]) -> Self {
         let mut css = CallStacks::new();
@@ -65,7 +59,7 @@ impl CallStacks {
             }
             if ends.iter().any(|s| s.match_quote(line)) && in_frames {
                 // call stack ends
-                css.insert(cs, 1);
+                css.push(cs);
                 cs = CallStack::new();
                 in_frames = false;
                 continue;
@@ -80,8 +74,8 @@ impl CallStacks {
     pub fn size(&self) -> usize {
         self.data.len()
     }
-    pub fn has(&self, k: &CallStack) -> bool {
-        self.data.contains_key(k)
+    pub fn has(&self, cs: &CallStack) -> bool {
+        self.data.iter().any(|e| e == cs)
     }
 }
 

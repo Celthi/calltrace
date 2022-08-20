@@ -22,7 +22,6 @@ impl Folder {
             map: HashMap::new(),
         };
         for cs in &css.data {
-            let cs = cs.0;
             folder.insert(cs.clone(), 1);
         }
         folder
