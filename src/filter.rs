@@ -35,13 +35,13 @@ impl<'a> AnyFrameFilter<'a> {
 
 impl<'a> Filter for AnyFrameFilter<'a> {
     fn execute(&self, cs: &CallStack) -> bool {
-        cs.frames.iter().any(|e| self.matcher.match_quote(&e.raw))
+        cs.iter().any(|e| self.matcher.match_quote(&e.raw))
     }
 }
 
 pub fn filter(css: &CallStacks, filter: &dyn Filter) -> CallStacks {
     let mut css_res = CallStacks::new();
-    for cs in &css.data {
+    for cs in css.iter() {
         if filter.execute(cs) {
             css_res.push(cs.clone());
         }

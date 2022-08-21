@@ -20,7 +20,7 @@ f3
     let s2 = quote::TrimExactMatch::new("RelRef:".to_string());
     let e1 = quote::TrimExactMatch::new("\n".to_string());
     let css = CallStacks::from_string(s, &[&s1, &s2], &[&e1]);
-    assert_eq!(css.size(), 2);
+    assert_eq!(css.len(), 2);
 }
 
 #[test]
@@ -40,7 +40,7 @@ fn output() {
     let s1 = quote::TrimExactMatch::new("Callstack:".to_string());
     let e1 = quote::TrimExactMatch::new("Callstack end".to_string());
     let css = CallStacks::from_string(s, &[&s1], &[&e1]);
-    assert_eq!(css.size(), 2);
+    assert_eq!(css.len(), 2);
     let cs = CallStack::from_string(
         r"
         f1

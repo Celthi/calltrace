@@ -17,7 +17,7 @@ impl PartialEq for CallStack {
 }
 impl Display for CallStack {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for v in &self.frames {
+        for v in self.iter() {
             writeln!(f, "{}", v)?;
         }
         writeln!(f)
@@ -33,9 +33,10 @@ impl Default for CallStack {
         Self::new()
     }
 }
+
 impl CallStack {
     pub fn subset(&self, other: &Self) -> bool {
-        for (l, r) in zip(self.frames.iter(), other.frames.iter()) {
+        for (l, r) in zip(self.iter(), other.iter()) {
             if l != r {
                 return false;
             }
@@ -43,7 +44,7 @@ impl CallStack {
         true
     }
     pub fn has_keyword(&self, pat: &str) -> bool {
-        for f in &self.frames {
+        for f in self.iter() {
             if f.raw.contains(pat) {
                 return true;
             }
@@ -72,6 +73,10 @@ impl CallStack {
             return None;
         }
         Some(&self.frames[i])
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, Frame> {
+        self.frames.iter()
     }
 
 }

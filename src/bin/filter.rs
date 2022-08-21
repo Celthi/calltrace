@@ -14,7 +14,7 @@ fn main() -> Result<()> {
     let filter_condition = filter::TopFrameFilter::new(&m);
     let css = filter::filter(&css, &filter_condition);
 
-    println!("size = {}", css.data.len());
+    println!("size = {}", css.len());
     println!("{}", css);
     Ok(())
 }

@@ -1,11 +1,12 @@
 pub mod callstack;
 pub mod frame;
+use crate::quote::MatchQuote;
 use anyhow::Result;
 use callstack::CallStack;
 use std::fmt;
 use std::fs::File;
 use std::io::Read;
-use crate::quote::MatchQuote;
+use std::iter::Iterator;
 pub struct CallStacks {
     pub data: Vec<CallStack>,
 }
@@ -24,8 +25,22 @@ impl Default for CallStacks {
     }
 }
 
+impl IntoIterator for CallStacks{
+    type Item = CallStack;
+    type IntoIter = <Vec<CallStack> as IntoIterator>::IntoIter;
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
+    }
+}
 impl CallStacks {
-    pub fn from_file(s: &str,starts: &[&dyn MatchQuote], ends: &[&dyn MatchQuote]) -> Result<Self> {
+    pub fn iter(&self) -> std::slice::Iter<'_, CallStack> {
+        self.data.iter()
+    }
+    pub fn from_file(
+        s: &str,
+        starts: &[&dyn MatchQuote],
+        ends: &[&dyn MatchQuote],
+    ) -> Result<Self> {
         let mut file = File::open(s)?;
         let mut content = String::new();
         let size = file.read_to_string(&mut content)?;
@@ -36,9 +51,7 @@ impl CallStacks {
         Ok(Self::from_string(&content, starts, ends))
     }
     pub fn new() -> Self {
-        CallStacks {
-            data: vec![]
-        }
+        CallStacks { data: vec![] }
     }
 
     pub fn push(&mut self, cs: CallStack) {
@@ -69,8 +82,11 @@ impl CallStacks {
         }
         css
     }
-    pub fn size(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.data.len()
+    }
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
     }
     pub fn has(&self, cs: &CallStack) -> bool {
         self.data.iter().any(|e| e == cs)

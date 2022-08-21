@@ -21,7 +21,7 @@ impl Folder {
         let mut folder = Folder {
             map: HashMap::new(),
         };
-        for cs in &css.data {
+        for cs in css.iter() {
             folder.insert(cs.clone(), 1);
         }
         folder

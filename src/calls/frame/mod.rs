@@ -18,7 +18,7 @@ struct InnerFrame {
 }
 impl PartialEq for InnerFrame {
     fn eq(&self, other: &Self) -> bool {
-        self.func == other.func && self.file == other.file && self.line == other.line
+        self.func == other.func && self.file == other.file && self.line == other.line && self.lib == other.lib
     }
 }
 impl InnerFrame {
